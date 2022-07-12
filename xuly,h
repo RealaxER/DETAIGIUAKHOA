@@ -1,0 +1,268 @@
+#pragma once
+#include "ctdl.h"
+void print_list_mh(ds_mon_hoc ds_mh);
+istream &operator >> (istream &is,mon_hoc &mh);
+ostream &operator << (ostream &os, mon_hoc mh );
+void xuat_ds_lop(danh_sach_lop &ds_lop);
+istream &operator >> (istream &is,lop &init_lop);
+ostream &operator<<(ostream&os,lop print_lop);
+note_sv *create_note_sv(sv a);
+void handle_sv(ds_sinh_vien &ds_sv,sv init_sv);
+int kiemtra_trung(danh_sach_lop init_ds_lop,string init_ma_lop);
+void xuat_1_lop(ds_sinh_vien ds_sv);
+void xuat_nhieu_lop_sv(danh_sach_lop ds_lop,int sl);
+ostream& operator <<(ostream& os, sv init_sv);
+note_diem_tp * create_note_diem(diem_tp init_diem );
+void them_diem(danh_sach_diem_tp & ds_diem, diem_tp init_diem);
+
+
+void menu()
+{
+    //setting
+    ds_mon_hoc ds_mh;
+    danh_sach_lop ds_lop;
+    bool kt_menu =true;
+    while(kt_menu ==true)
+    {
+        system("cls");
+        cout << "1.Nhap mon hoc" << endl;
+        cout << "2.Nhap lop hoc" << endl;
+        cout << "3.Nhap du lieu sinh vien co ma lop nhap tu ban phim " << endl;
+        cout << "4.Xuat danh sach mon hoc" << endl;
+        cout << "5.Xuat danh sach lop hoc" << endl;
+        cout << "6.Xuat danh sach sinh vien" << endl;
+        cout << "7.Thoat" << endl;
+        int lc;
+        cout << "Nhap lc"; cin >> lc;
+        switch (lc)
+        {
+        // nhập môn học cần nhập nếu chưa load file
+        case 1:
+        {
+            int sl;cout << "\nNhap so luong mon hoc : "; cin >> sl;
+            for(int i =0; i<sl;i++)
+            {
+                cin.ignore();
+                cout << "\n-------------Nhap mon hoc thu " << i <<  "--------------" << endl;
+                cin >>ds_mh.ds[ds_mh.sl++] ;
+                break;
+            }
+        
+        }
+        case 2:
+         {
+            int sl;cout <<"\nNhap so luong lop hoc : "; cin >> sl;
+            for(int i = 0; i<sl; i++)
+            {
+                cin.ignore();
+                cout << "\n-------------Nhap lop hoc thu " << i <<  "--------------" << endl;
+                cin >>ds_lop.ds[ds_lop.sl++] ;
+                break;
+            }
+        }
+        case 3:
+        {
+            cin.ignore();
+            // xóa bộ nhớ đjêm cũ
+            cout << "\nNhap ma lop can them : ";
+            string init_ma_lop;
+            getline(cin, init_ma_lop);
+            // khia báo hàm true false kiểm tra có trùng không
+            int kiemtra = kiemtra_trung(ds_lop,init_ma_lop);
+            if(kiemtra != -1)
+            {
+                ds_lop.ds[kiemtra];
+                int sl;cout << "\nNhap so luong sinh vien can them : ";cin>> sl;
+                // xóa bộ nhớ đêm vì có dùng cin;
+                cin.ignore();
+                for(int i =0 ;i<sl ;i++)
+                {
+                    cout << "\t\t----------NHAP SINH VIEN THU" << i << "-------------" <<endl;
+                    sv a;
+                    cin >> a;
+                    handle_sv(ds_lop.ds[kiemtra].ds_sv,a);
+                }
+            }
+            else{
+                cout << "\nKhong tim thay lop nay";
+                system("pause");
+            }
+            break;
+        }
+        case 4:
+        {
+            // xuât danh sách môn học
+            print_list_mh(ds_mh);
+            system("pause");
+            break;
+        }
+        // xuât danh sach lop//
+        case 5:
+        {
+            xuat_ds_lop(ds_lop);
+            system("pause");
+            break;
+        }  
+        // xuất danh sách sinh viển    
+        case 6:
+        {
+            break;
+        }
+
+        case 7:
+        {
+            kt_menu =false;
+            break;
+        }
+        // không trường hợp nào    
+        default:
+            break;
+        }
+    } 
+    // ghi file  
+}
+int kiemtra_trung(danh_sach_lop init_ds_lop,string init_ma_lop)
+{
+    for(int i = 0 ;i< init_ds_lop.sl;i++)
+    {
+       if(_stricmp(init_ds_lop.ds[i].ma_lop.c_str(),init_ma_lop.c_str())==0) 
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+//nap chong nhap danh sách môn  học
+istream &operator >> (istream &is,mon_hoc &mh)
+{
+    cout << "Nhap ma mon hoc : " ;getline(is,mh.ma_mh);
+    cout << "Nhap ten mon hoc : " ;getline(is,mh.ten_mh);
+    cout << "Nhap so tin chi lt : " ; is >> mh.stclt;
+    cout << "Nhap so tin chi thuc hanh : " ; is >> mh.stcth;
+    return is;
+}
+//nap chong xuat danh sach mon hoc
+ostream &operator << (ostream &os, mon_hoc mh )
+{
+    cout << "Ma mon hoc : " <<mh.ma_mh << endl;
+    cout << "Ten mon hoc : " << mh.ten_mh << endl;
+    cout << "So tin chi lt : "  << mh.stclt<< endl;
+    cout << "So tin chi thuc hanh : "  << mh.stcth << endl;
+    return os;
+}
+istream &operator >> (istream &is,sv&init_sv)
+{
+    cout << "Nhap ma sinh vien : " ;getline(is,init_sv.ma_sv);
+    cout << "Nhap ten sinh vien : " ;getline(is,init_sv.ten);
+    cout << "Nhap ho sinh vien : " ;getline(is,init_sv.ho);
+    cout << "Nhap phai sinh vien : " ;getline(is,init_sv.phai);
+    cout << "Nhap ten sinh vien : " ;getline(is,init_sv.sdt);
+    return is;
+}
+ostream& operator <<(ostream& os, sv init_sv)
+{
+	os << "Ma sv: " << init_sv.ma_sv << endl;
+	os << "Ho ten: " << init_sv.ho << " " << init_sv.ten << endl;
+	os << "Phai: " << init_sv.phai << endl;
+	os << "SDT: " << init_sv.sdt << endl;
+	return os;
+}
+void print_list_mh(ds_mon_hoc ds_mh)
+{
+    cout << "\t\t\n=============XUAT DANH SACH MON HOC===========" << endl;
+    for(int i = 0; i<ds_mh.sl; i++)
+    {
+        cout << "\n Mon hoc thu " << i << " la : ";
+        cout << ds_mh.ds[i];
+    }
+}
+// DANH SACH LOP
+istream &operator >> (istream &is,lop &init_lop)
+{   
+    cout << "Nhap ma lop : " ;getline(is,init_lop.ma_lop);
+    cout << "Nhap ten lop : " ;getline(is,init_lop.ten_lop);
+    cout << "Nhap nien khoa : " ;
+    is>>init_lop.nien_khoa;
+    return is;
+}
+ostream &operator<<(ostream&os,lop print_lop)
+{
+    cout << "Ma lop : " << print_lop.ma_lop << endl;
+    cout << "Ten lop : " << print_lop.ten_lop << endl;
+    cout << "Nien khoa : " << print_lop.nien_khoa << endl;
+    return os;
+}
+void xuat_ds_lop(danh_sach_lop &ds_lop)
+{
+    cout <<"\t\t\n=========XUAT DANH SACH LOP=======";
+    for(int i= 0 ;i<ds_lop.sl; i++)
+    {
+        cout << "---Danh sach lop thu " << i << " la---"<< endl;
+        cout << ds_lop.ds[i];
+    }
+}
+note_sv *create_note_sv(sv a)
+{
+    note_sv *temp_sv = new note_sv;
+    temp_sv->data_sv = a;
+    temp_sv->pnext = NULL;
+    return temp_sv;
+}
+//sử dụng pp thêm cuối của linked list
+void handle_sv(ds_sinh_vien &ds_sv,sv init_sv)
+{
+    note_sv *handle_sv = create_note_sv(init_sv);
+    // TH k có phân từ nào 
+    if(ds_sv.phead = NULL)
+    {
+        ds_sv.phead = ds_sv.ptail = handle_sv;
+    }
+    else{
+        ds_sv.ptail->pnext = handle_sv;
+        ds_sv.ptail = handle_sv;
+    }
+}
+void xuat_ds_sv(ds_sinh_vien ds_sv)
+{
+    // vòng duyệt lấy k là điểm duyệt từ đầu đến cuối 
+    for(note_sv *k = ds_sv.phead; k!= NULL;k=k->pnext)
+    {
+        
+    }
+}
+void xuat_1_lop(ds_sinh_vien ds_sv)
+{
+    for(note_sv *k = ds_sv.phead; k!=NULL;k = k->pnext)
+    {
+        cout << k->data_sv;
+    }
+}
+void xuat_nhieu_lop_sv(danh_sach_lop ds_lop,int sl)
+{
+    cout << "\n\t\t------XUAT LOP SINH VIEN-----" <<endl;
+    for(int i =0 ; i<sl;i++)
+    {
+        cout << "\n\t------XUAT LOP SINH VIEN THU " << i <<"-----" <<endl;
+        xuat_1_lop(ds_lop.ds[i].ds_sv);
+    }
+}
+note_diem_tp * create_note_diem(diem_tp init_diem )
+{
+    note_diem_tp * diem_pointer = new note_diem_tp;
+    diem_pointer->data_diem = init_diem;
+    diem_pointer->pnext = NULL;
+    return diem_pointer;
+}
+void them_diem(danh_sach_diem_tp & ds_diem, diem_tp init_diem)
+{
+    note_diem_tp *handle_diem_tp = create_note_diem(init_diem);
+    // TH k có phân từ nào 
+    if(ds_diem.phead = NULL)
+    {
+        ds_diem.phead = ds_diem.ptail = handle_diem_tp ;
+    }
+    else{
+        ds_diem.ptail->pnext = handle_diem_tp ;
+        ds_diem.ptail = handle_diem_tp ;
+    }
+}
